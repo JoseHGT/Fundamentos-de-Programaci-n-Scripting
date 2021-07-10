@@ -63,7 +63,7 @@ gapminder %>%
 library(ggplot2)
 
 gapminder_1952 <- gapminder %>%
-  filter(year==1957) #para agregar mas filtro unicamente se van agregando separados por coma filter(year==1952, continent=="Asia")
+  filter(year==1952) #para agregar mas filtro unicamente se van agregando separados por coma filter(year==1952, continent=="Asia")
 
 gapminder_1952
 
@@ -87,5 +87,24 @@ ggplot(gapminder_1952, aes(x=pop, y=lifeExp, color=continent)) +
   geom_point() +
   scale_x_log10() +
   scale_y_log10()
+```
+
+```{r}
+
+ggplot(gapminder_1952, aes(x=pop, y=lifeExp, color=continent, size=gdpPercap)) + 
+  geom_point() +
+  scale_x_log10() 
+ # scale_y_log10()
+```
+
+```{r}
+
+ggplot(gapminder, aes(x=gdpPercap, y=lifeExp))+
+  geom_point() +
+  scale_x_log10()+
+  facet_wrap(~ year)
+
+
+
 ```
 
