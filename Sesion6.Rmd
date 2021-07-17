@@ -156,3 +156,92 @@ counties %>%
 
 ```
 
+The count_verb
+
+```{r}
+counties_selected <- counties %>%
+  select(county,region, state, population, citizens)
+
+counties_selected %>%
+  count (region, sort=TRUE)  #agregando sort lo ordena de manera descendente.
+
+counties_selected %>%
+  
+  count(state, wt = citizens)%>%  #wt (weight)  hace el summary de la variable citizens
+  arrange(desc(n))
+
+counties_selected <- counties %>%
+  select(county,region, state, population, citizens,walk)
+
+test <- counties_selected %>%
+  mutate(population_walk = population*walk/100 ) %>%
+  count(state, wt=population_walk, sort=TRUE)
+  
+test %>%
+  select(state, number=n)  #para cambiar o asignarle nombre a la variable n.
+
+
+```
+Summarizing
+
+```{r}
+counties_selected <- counties %>%
+  select(county,region, population, income, unemployment)
+
+counties_selected %>%
+  summarize(min_population=min(population), max_unemployment=max(unemployment), average_income=mean(income))
+
+counties_selected <- counties %>%
+  select(state,county, population, land_area)
+
+counties_selected %>%
+  group_by(state) %>%
+  summarize(total_area=sum(land_area), total_population=sum(population))
+
+counties_selected <- counties %>%
+  select(region, state, county, population)
+
+counties_selected %>%
+  group_by(region, state)%>% #agrupamos por dos variables
+  summarize(total_pop=sum(population)) %>%
+  #ungroup() %>%  #Para desagrupar  las variables region y estado, al usar el ungruup y correr el siguiente codigo unicamente nos dara una media  y una mediana a nivel general, sin agrupamiento dando un unico resultado
+  summarize(average_pop=mean(total_pop), median_pop=median(total_pop))
+
+```
+
+The top-n verb
+
+```{r}
+counties_selected <- counties %>%
+  select(region, state, county, metro, population,walk)
+
+counties_selected %>%
+  group_by(region) %>%
+  top_n(2, walk)  #función para regresar el top que querramos.
+
+counties_selected <- counties %>%
+  select(region, state, county, population,income)
+
+counties_selected %>%
+  group_by(region, state) %>%
+  summarize(average_income=mean(income)) %>%
+  #ungroup() %>%
+  top_n(1, average_income)%>%
+  arrange(desc(average_income)) #para ordenarlo de forma descendente por average_income
+
+```
+
+```{r}
+counties_selected <- counties %>%
+  select(region, state,  metro, population)
+
+counties_selected %>%
+  group_by(state, metro) %>%
+  summarize(total_pop=sum(population)) %>%
+  top_n(1,total_pop) %>%
+  ungroup() %>%  #Si no se usa el ungroup al final del codigo count nos va a mostrar un valor por cada estado, por eso lo ideal es usar el ungruop para obtener un total de la variable metro x metro y nonmetro
+  count(metro, wt=total_pop)  #count(metro) solo esto nos devuelte las coincidencias 44 metro y 6 no, agregando wt=total_pop, nos devuelve el total de las coincidencias de total_pop
+
+```
+
+
