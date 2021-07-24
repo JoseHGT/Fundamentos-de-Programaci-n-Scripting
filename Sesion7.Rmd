@@ -73,4 +73,20 @@ sets %>%
   inner_join(themes, by=c("theme_id"="id")) #Se definen cuales son las variables que se van a vincular, preservando el del primer set.
 ```
 
+```{r}
+view(parts)
+view(part_categories)
+
+view_parts <- parts %>%
+  inner_join(part_categories, by=c("part_cat_id" = "id"))
+view (view_parts)
+
+view_parts2 <- parts %>%
+  inner_join(part_categories, by=c("part_cat_id" = "id"), suffix= c("_parts", "_parts_categories"))
+
+view (view_parts2)
+  
+
+```
+
 
