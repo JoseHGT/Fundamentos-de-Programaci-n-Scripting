@@ -1,0 +1,78 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library (tidyverse)
+library (dplyr)
+
+```
+
+
+DS
+
+```{r}
+El_SALVADOR <- read_csv("SV_CONSULTA_LTE_CA.csv")
+El_SALVADOR
+
+```
+
+
+```{r}
+sv_lte <- read.table(file = "SV_25_31_Julio.txt", header = TRUE, sep="\t", row.names=NULL)
+head(sv_lte)
+
+```
+
+
+```{r}
+
+ sv_lte2 <- sv_lte %>%
+  select(-pmuethp2dldistr_00, -pmuethp2dldistr_01, -pmuethp2dldistr_02, -pmuethp2dldistr_03, -pmuethp2dldistr_04, -pmuethp2dldistr_05, -pmuethp2dldistr_06, -pmuethp2dldistr_07, -pmuethp2dldistr_08, -pmuethp2dldistr_09, -pmuethp2dldistr_10,  -pmuethp2dldistr_11, -pmuethp2dldistr_12, -pmuethp2dldistr_13, -pmuethp2dldistr_14, -pmuethp2dldistr_15, -pmuethp2dldistr_16, -pmuethp2dldistr_17, -pmuethp2dldistr_18, -pmuethp2dldistr_19, -pmuethp2dldistr_20, -pmuethp2dldistr_21, -pmuethp2dldistr_22, -pmuethp2dldistr_23, -pmuethp2dldistr_24, -pmuethp2dldistr_25, -pmuethp2dldistr_26)%>%
+  #filter(erbs == "VERSAY")%>%
+  #select::dplyr(-start_with(pmuethp2dldistr))%>%
+  mutate (DL_Vol_MB = (pmpdcpvoldldrb/(8*1000))) %>%
+  #mutate(UL_Vol_MB= (pmpdcpvoluldrb/(8*1000))) %>%
+  mutate (AVG_DlUserThrMbps = ((pmpdcpvoldldrb-pmpdcpvoldldrblasttti)/(pmuethptimedl/1000))/1000)%>%
+  mutate (DL_SCHEDULINGRATE = pmschedactivitycelldl/36000)%>%
+  mutate (DL_PRB = pmprbuseddlsum / pmprbuseddlsamp) %>%
+  #mutate (DL_PRB_UTILIZATION = DL_PRB/pmprbavaildl)%>%
+  mutate (DL_MAC_VOLUME_X_PRB_MBH= (pmradiothpvoldl/(8*1000))/(pmprbuseddlsum / pmprbuseddlsamp))
+  
+ sv_lte2
+  
+
+  
+ 
+
+```
+
+SD
+
+
+```{r}
+base_LTE_SV <- read_csv("Base2_LTE_SV_07_2021.csv",locale = vroom::locale(encoding = "CP1252"))
+base_LTE_SV
+
+```
+
+```{r}
+SV_JOIN  <-sv_lte2 %>%
+  inner_join(base_LTE_SV, by = c("eutrancellfdd" = "eutrancellfdd")) # unicamente queda el id que es el comun de ambas tablas
+  
+SV_JOIN
+```
+
+
+```{r}
+SV_JOIN %>%
+  filter(erbs == "VERSAY")%>%
+  mutate(DL_PRB_utilization = (DL_PRB/Capacidad_PRB)*100)%>%
+  if (DL_MAC_VOLUME_X_PRB_MBH >umbral_VOL_PRB, 1 )
+
+  
+
+```
+
